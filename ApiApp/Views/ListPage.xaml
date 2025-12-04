@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModel="clr-namespace:RawGames.ViewModel"
+             xmlns:model="clr-namespace:RawGames.Model"
+             x:Class="RawGames.Views.GameListPage"
+             x:DataType="viewModel:GameListViewModel"
+             Title="MusicListPage">
+    <Grid RowDefinitions="Auto,*" Padding="0">
+        <!-- Barra de Busqueda-->
+        <SearchBar Grid.Row="0"
+                   Placeholder="Buscar Juegos..."
+                   Text="{Binding SearchText}"
+                   SearchCommand="{Binding LoadGamesCommand}"
+                   Margin="10.5"/>
+        <!-- Lista de Juegos-->
+        <RefreshView Grid.Row="1"
+                     IsRefreshing="{Binding IsBusy}"
+                     Command="{Binding RefreshCommand}">
+            <CollectionView ItemsSource="{Binding Games}"
+                            SelectionMode="Single"
+                            SelectionChangedCommand="{Binding GameSelectedCommand}"
+                            SelectionChangedCommandParameter="{Binding Source={RelativeSource Self},Path=SelectedItem}"
+                            RemainingItemsThreshold="3"
+                            RemainingItemsThresholdReachedCommand="{Binding LoadMoreGamesCommand}">
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="model:Game">
+                        <Frame Margin="10.5"
+                              Padding="0"
+                              CornerRadius="10"
+                              HasShadow="true"
+                              BorderColor="Transparent">
+                            <Grid RowDefinitions="200,auto,auto,auto" ColumnDefinitions="*">
+                                <Image Grid.Row="0"
+                                       Source="{Binding BackgroundImage}"
+                                       Aspect="AspectFill" HeightRequest="200">
+                                    <Image.Clip>
+                                        <RoundRectangleGeometry CornerRadius="10,10,0,0"
+                                                                Rect="0,0,1000,200"/>
+                                    </Image.Clip>
+                                </Image>
+
+                                <!-- Overlay para el rating -->
+                                <Frame Grid.Row="0"
+                                       BackgroundColor="#CC000000"
+                                       Padding="8.4"
+                                       CornerRadius="5"
+                                       HasShadow="False"
+                                       HorizontalOptions="End"
+                                       VerticalOptions="Start"
+                                       Margin="10">
+                                    <Label Text="{Binding MetacriticFormatted}"
+                                           TextColor="White"
+                                           FontAttributes="Bold"
+                                           FontSize="12"/>
+                                </Frame>
+
+                                <!-- Nombre del juego -->
+                                <Label Grid.Row="1"
+                                        Text="{Binding Name}"
+                                        FontSize="18"
+                                        FontAttributes="Bold"
+                                        Margin="10,10,10,5"
+                                        LineBreakMode="TailTruncation"
+                                        MaxLines="2"/>
+
+                            </Grid>
+                        </Frame>
+
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+                <!-- Indicador de carga al final -->
+                <CollectionView.Footer>
+                    <StackLayout Padding="10" IsVisible="{Binding IsLoadingMore}">
+                        <ActivityIndicator IsRunning="True" 
+                          Color="{StaticResource Primary}"
+                          HeightRequest="40"/>
+                        <Label Text="Cargando más juegos..." 
+                HorizontalTextAlignment="Center"
+                TextColor="Gray"/>
+                    </StackLayout>
+                </CollectionView.Footer>
+
+                <!-- Vista cuando está vacío -->
+                <CollectionView.EmptyView>
+                    <StackLayout VerticalOptions="Center" Padding="30">
+                        <Label Text="😔" 
+                 FontSize="48"
+                 HorizontalTextAlignment="Center"
+                 Margin="0,0,0,10"/>
+                        <Label Text="No se encontraron juegos" 
+                 FontSize="18"
+                 HorizontalTextAlignment="Center"
+                 TextColor="Gray"/>
+                        <Label Text="Intenta con otra búsqueda" 
+                 FontSize="14"
+                 HorizontalTextAlignment="Center"
+                 TextColor="LightGray"
+                 Margin="0,5,0,0"/>
+                    </StackLayout>
+                </CollectionView.EmptyView>
+
+
+            </CollectionView>
+        </RefreshView>
+
+        <!-- Indicador de carga inicial -->
+        <ActivityIndicator Grid.Row="1"
+                  IsRunning="{Binding IsBusy}"
+                  IsVisible="{Binding IsBusy}"
+                  Color="{StaticResource Primary}"
+                  VerticalOptions="Center"
+                  HorizontalOptions="Center"
+                  HeightRequest="50"
+                  WidthRequest="50"/>
+
+    </Grid>
+</ContentPage>
