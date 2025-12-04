@@ -47,7 +47,6 @@ namespace RawGames.ViewModel
             RefreshCommand = new Command(async () => await RefreshGameAsync());
             GameSelectedCommand = new Command<Game>(OnGameSelected);
 
-            // Cargar álbumes al inicializar
             Task.Run(async () => await LoadGamesAsync());
         }
 
